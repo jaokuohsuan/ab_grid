@@ -1,0 +1,61 @@
+
+
+@import "lib/ab_grid"
+
+//turn off column bord, for small size css files...maybe
+//$with_line: flase 
+//$line_color: #ddd !default
+
+
+//turn on media query setting
+//de
+$with_media_query: true
+
+// add new grid by ab_grid mixin
+// example: +ab_grid(a a a,b b,c c c)
+//will make 3 column layout ,with ratio 3:2:3  under .columns_aaabbccc
+
+
+//change container column name by change $child_name ,example:
+//$container_name: parent
+//+ab_grid(a a a,b b)
+//will output--> .parent_aaabb
+
+
+//change inner column name by change $child_name ,example:
+//$child_name: item
+
+
+
+
+//basic layout grid
++ab_grid(a)
++ab_grid(a,b)
++ab_grid(a,b,c)
++ab_grid(a, b ,c, d)
+
++ab_grid(a,b b)
++ab_grid(a a,b)
++ab_grid(a a a, b)
++ab_grid(a ,b b b)
++ab_grid(a a,b b b)
++ab_grid(a a a,b b)
++ab_grid(a,b,c,d,e,f,g,h)
+
+
+//for demo
+.grid_abcdefgh
+  .column
+    font-size: 13px
+
+
+//use different unit column gutter
+$column_gutter: 5rem
++ab_grid(w,x,y,z)
+
+
+.test
+  right: get_position_value( right , 10px 20px 30px 40px)
+  right: get_position_value( right , 10px 20px 30px)
+  right: get_position_value( right , 10px 20px)
+  right: get_position_value( right , 10px)

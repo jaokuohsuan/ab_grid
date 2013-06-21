@@ -1,0 +1,244 @@
+
+$column_bottom: 1em !default
+$column_gutter: 5% !default
+$column_padding: null !default
+$container_name: "grid_" !default
+$child_name: "column" !default
+
+$line_color: #ddd !default
+
+$break-point: 720px !default
+$with_line: false !default
+$with_media_query: false !default
+
+
+
+
+//$column_gutter: 3em   fix it
+
+%clearfix
+  &:after
+    content: "."
+    display: block
+    height: 0
+    clear: both
+    visibility: hidden
+
+%container_style
+  margin-bottom: $column_bottom
+
+  //for inlne flex
+  display: -webkit-box
+  //display: -moz-box
+  display: -ms-flexbox
+  display: -webkit-flex
+  display: flex
+  -webkit-flex-wrap: nowrap
+  flex-wrap: nowrap
+
+
+%child_style
+  float: left
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  -ms-box-sizing: border-box
+  box-sizing: border-box
+  @if $column_padding != null
+    padding: $column_padding
+
+%child_style_with_line
+  -webkit-box-sizing: content-box
+  -moz-box-sizing: content-box
+  -ms-box-sizing: content-box
+  box-sizing: content-box
+
+
+%child_style_of_media_query  
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  -ms-box-sizing: border-box
+  box-sizing: border-box
+  float: none
+  width: 100%
+
+$lists_colloction: unquote("")
+
+//gutter unit staus
+$gutter_is_percentage:  unit($column_gutter)== "%"  
+
+=ab_grid($lists...)
+  $total_list: length($lists)
+  $total_unit: 0  
+  $total_name: ""
+  $lists_colloction: append($lists_colloction,$lists)
+
+
+
+  @for $i from 1 through $total_list
+    $temp_a: nth($lists,$i)
+    $temp_l: length($temp_a)
+    $total_unit: $total_unit + $temp_l
+    @for $k from 1 through $temp_l
+      $temp_temp_a: nth($temp_a,$k)
+      $total_name: $total_name+$temp_temp_a
+
+
+  // unit %
+  $column_unit: unquote("")  
+
+  @if $gutter_is_percentage
+    $column_unit: (100% - ($column_gutter * ($total_list - 1)))/ $total_unit
+  @else    
+    $column_unit: 100% / $total_unit
+
+  
+
+  .#{$container_name}#{$total_name}    
+    @extend %container_style
+    @extend %clearfix
+
+    @if $total_list ==1
+      .#{$child_name}
+        width: 100%
+    @else
+      @for $i from 1 through $total_list
+        $temp_a: nth($lists,$i)
+        $temp_l: length($temp_a)
+        @if $i==1        
+          > .#{$child_name}:first-child
+            @extend %child_style    
+            width: child_each_width($column_unit , $temp_l , $total_list) 
+            margin-right: $column_gutter 
+   
+            
+
+        @else if $i==$total_list
+          > .#{$child_name}:last-child
+            @extend %child_style  
+            width: child_each_width($column_unit , $temp_l , $total_list) 
+            margin-right: 0
+
+        @else
+          > .#{$child_name}:nth-child(#{$i})
+            @extend %child_style
+            width: child_each_width($column_unit , $temp_l , $total_list) 
+            margin-right: $column_gutter
+
+  @if $with_line
+    .#{$container_name}#{$total_name}.with_line
+
+
+      @if $total_list >1
+        @for $i from 1 through $total_list
+          $temp_a: nth($lists,$i)
+          $temp_l: length($temp_a)
+          $column_gutter_withline: $column_gutter / 2
+          @if $i==1        
+            > .#{$child_name}:first-child
+              @extend %child_style_with_line   
+              width: child_each_width($column_unit , $temp_l , $total_list)             
+              margin-right: $column_gutter_withline
+              padding-right: unquote("calc(") $column_gutter_withline unquote("- 1px )") 
+              border-right: 1px solid $line_color
+
+          @else if $i==$total_list
+            > .#{$child_name}:last-child
+              @extend %child_style_with_line 
+              width: child_each_width($column_unit , $temp_l , $total_list) 
+              margin-right: 0
+          @else
+            > .#{$child_name}:nth-child(#{$i})
+              @extend %child_style_with_line
+              width: child_each_width($column_unit , $temp_l , $total_list) 
+              margin-right: $column_gutter_withline
+              padding-right: unquote("calc(") $column_gutter_withline unquote("- 1px )") 
+              border-right: 1px solid $line_color
+
+
+
+
+=test123($a)
+  .test2
+    margin: $a
+    content: nth($lists_colloction,2)
+
+
+
+
+@media only screen and (max-width : #{$break-point})
+  .test3
+    top: 3
+   
+
+
+// @if $with_media_query
+//   +test($templists)
+
+
+// +test123(20px 40px 60px)
+  // @if $with_media_query
+  //   unquote("@media only screen (") unquote("max-width:") $break-point unquote(" ) ")
+  //     .#{$container_name}#{$total_name}
+  //       @if $total_list >1
+  //         @for $i from 1 through $total_list
+  //           $temp_a: nth($lists,$i)
+  //           $temp_l: length($temp_a)
+  //           $column_gutter_withline: $column_gutter / 2
+  //           @if $i==1        
+  //             > .#{$child_name}:first-child
+  //               @extend %child_style_of_media_query 
+  //           @else if $i==$total_list
+  //             > .#{$child_name}:last-child
+  //               @extend %child_style_of_media_query 
+  //           @else
+  //             > .#{$child_name}:nth-child(#{$i})
+  //               @extend %child_style_of_media_query 
+         
+
+  //     .#{$container_name}#{$total_name}  
+  //       width: 100%
+
+
+
+
+
+
+
+
+    
+    
+@function child_each_width($column_unit , $each_list_length ,$total_list_length) 
+  @if $gutter_is_percentage
+    @return $column_unit * $each_list_length
+  @else
+    @return  unquote("calc(") $column_unit * $each_list_length unquote("-") $column_gutter/$total_list_length unquote(")")  
+
+        
+
+// @function filter($list, $target) 
+//   $clean: compact()
+//   @if index($list, $target) 
+//     @each $item in $list 
+//       $clean: if($item == $target, $clean, append($clean, $item))    
+//   @else
+//     $clean: $list 
+//   @return $clean
+
+
+
+//with line
+
+// //RWD mode 
+// 1.水平
+// 2.垂直
+// 3.動態順序
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,41 @@
+
+//for image in column float
+
+.#{$child_name}
+  img
+    &.right
+      float: right
+      margin: 1.5em 0 1.5em 1.5em
+    &.left 
+      float: left
+      margin: 1.5em 1.5em 1.5em 0
+    &.center 
+      margin-left: auto
+      margin-right: auto
+      display: block
+
+
+//Fine tuning layout tools and image
+
+$tuning_unit: 0.625em !default
+
+.base_img
+  position: relative
+  z-index: -1
+
+@for $i from 1 through 20 
+  .l_up_#{$i}
+    margin-top: -1 * $tuning_unit * $i
+//down
+@for $i from 1 through 20 
+  .l_down_#{$i}
+    margin-top: $tuning_unit * $i
+//left
+@for $i from 1 through 20 
+  .l_left_#{$i}
+    margin-left: -1 * $tuning_unit * $i
+
+//right
+@for $i from 1 through 20 
+  .l_right_#{$i}
+    margin-left: $tuning_unit * $i
