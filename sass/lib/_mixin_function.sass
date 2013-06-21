@@ -7,11 +7,11 @@
     height: 0
     clear: both
     visibility: hidden
-
+//for grid container
 %container_style
   margin-bottom: $grid_bottom
 
-  //for flex layout
+  //for column stretch, but with some side effect
   // display: -webkit-box
   // display: -ms-flexbox
   // display: -webkit-flex
@@ -24,8 +24,7 @@
   -moz-box-sizing: border-box
   -ms-box-sizing: border-box
   box-sizing: border-box
-  @if $column_padding != null
-    padding: $column_padding
+  
 
 %child_style_with_line
   -webkit-box-sizing: content-box
@@ -33,7 +32,7 @@
   -ms-box-sizing: content-box
   box-sizing: content-box
 
-// @extend not work in @media query .... = =
+// @extend not work in @media query  ....= =
 // %child_style_of_media_query  
 //   -webkit-box-sizing: border-box
 //   -moz-box-sizing: border-box
@@ -51,7 +50,8 @@ $lists_collection: unquote("")
   $total_name: ""
   $lists_colloction: append($lists_collection,$lists) // collection input name for reuse... maybe
   //gutter unit staus
-  $gutter_is_percentage:  unit($column_gutter)== "%" 
+  $gutter_is_percentage:  unit($column_gutter)== "%" or unit($column_gutter)== ""
+  $padding_is_percentage: unit($column_padding)== "%" or unit($column_padding)== ""
 
 
   @for $i from 1 through $total_list
@@ -76,6 +76,7 @@ $lists_collection: unquote("")
   .#{$container_name}#{$total_name}    
     @extend %container_style
     @extend %clearfix
+    content : $padding_is_percentage
 
     @if $total_list ==1
       .#{$child_name}
@@ -89,6 +90,8 @@ $lists_collection: unquote("")
             @extend %child_style    
             width: child_each_width($gutter_is_percentage,$column_unit , $temp_l , $total_list) 
             margin-right: $column_gutter 
+            @if $column_padding != 0
+              padding: $column_padding
    
             
 
@@ -97,12 +100,16 @@ $lists_collection: unquote("")
             @extend %child_style  
             width: child_each_width($gutter_is_percentage,$column_unit , $temp_l , $total_list) 
             margin-right: 0
+            @if $column_padding != 0
+              padding: $column_padding
 
         @else
           > .#{$child_name}:nth-child(#{$i})
             @extend %child_style
             width: child_each_width($gutter_is_percentage,$column_unit , $temp_l , $total_list) 
             margin-right: $column_gutter
+            @if $column_padding != 0
+              padding: $column_padding
 
   // with line style
   @if $with_line
@@ -114,24 +121,38 @@ $lists_collection: unquote("")
           $column_gutter_withline: $column_gutter / 2
           @if $i==1        
             > .#{$child_name}:first-child
-              @extend %child_style_with_line   
-              width: child_each_width($gutter_is_percentage,$column_unit , $temp_l , $total_list)             
-              margin-right: $column_gutter_withline
-              padding-right: unquote("calc(") $column_gutter_withline unquote("- 1px )") 
+              @extend %child_style_with_line                            
+              margin-right: $column_gutter_withline              
               border-right: 1px solid $line_color
+              width: child_each_width_for_line($gutter_is_percentage,$column_unit , $temp_l , $total_list,$padding_is_percentage,$column_padding) 
+              @if $column_padding != 0
+                $right_padding_vaule: get_position_value("right",$column_padding)                
+                padding: $column_padding
+                padding-right: unquote("calc(") $column_gutter_withline unquote(" + ") $right_padding_vaule unquote(" - 1px )")
+               
+              @else
+                padding-right: unquote("calc(") $column_gutter_withline unquote("- 1px )")    
 
           @else if $i==$total_list
             > .#{$child_name}:last-child
               @extend %child_style_with_line 
-              width: child_each_width($gutter_is_percentage,$column_unit , $temp_l , $total_list) 
+              width: child_each_width_for_line($gutter_is_percentage,$column_unit , $temp_l , $total_list,$padding_is_percentage,$column_padding) 
               margin-right: 0
+
+
           @else
             > .#{$child_name}:nth-child(#{$i})
               @extend %child_style_with_line
-              width: child_each_width($gutter_is_percentage,$column_unit , $temp_l , $total_list) 
-              margin-right: $column_gutter_withline
-              padding-right: unquote("calc(") $column_gutter_withline unquote("- 1px )") 
+              width: child_each_width_for_line($gutter_is_percentage,$column_unit , $temp_l , $total_list,$padding_is_percentage,$column_padding)  
+              margin-right: $column_gutter_withline              
               border-right: 1px solid $line_color
+              @if $column_padding != 0
+                $right_padding_vaule: get_position_value("right",$column_padding)                
+                padding: $column_padding
+                padding-right: unquote("calc(") $column_gutter_withline unquote(" + ") $right_padding_vaule unquote(" - 1px )")
+               
+              @else
+                padding-right: unquote("calc(") $column_gutter_withline unquote("- 1px )") 
   // with the most basic media query style for small screen
   @if $with_media_query
     @media only screen and (max-width: $break-point)
@@ -161,6 +182,31 @@ $lists_collection: unquote("")
     $column_gutter_ratio: ($total_list_length - 1)/ $total_list_length
     @return  unquote("calc(") $column_unit * $each_list_length unquote("-") $column_gutter * $column_gutter_ratio unquote(")")  
 
+//get return vaule depend on gutter and padding unit for .with_line
+@function child_each_width_for_line($gutter_is_percentage,$column_unit , $each_list_length ,$total_list_length,$padding_is_percentage,$padding) 
+  $right_padding_vaule: get_position_value("right",$padding)
+  $left_padding_vaule: get_position_value("left",$padding)
+  @if $column_padding != 0
+    @if $gutter_is_percentage
+      @if $padding_is_percentage
+        @return $column_unit * $each_list_length  - $right_padding_vaule - $left_padding_vaule
+      @else 
+        @return unquote("calc(") $column_unit * $each_list_length  unquote(" - ") $right_padding_vaule unquote(" - ") $left_padding_vaule unquote(")") 
+    @else
+      @if $padding_is_percentage
+        $column_gutter_ratio: ($total_list_length - 1)/ $total_list_length
+        @return unquote("calc(") $column_unit * $each_list_length - $right_padding_vaule - $left_padding_vaule unquote("-") $column_gutter * $column_gutter_ratio unquote(")")  
+      @else
+        $column_gutter_ratio: ($total_list_length - 1)/ $total_list_length
+        @return unquote("calc(") $column_unit * $each_list_length  unquote(" - ") $right_padding_vaule unquote(" - ") $left_padding_vaule unquote(" - ") $column_gutter * $column_gutter_ratio unquote(")") 
+  @else
+    @if $gutter_is_percentage
+      @return $column_unit * $each_list_length
+    @else
+      $column_gutter_ratio: ($total_list_length - 1)/ $total_list_length
+      @return  unquote("calc(") $column_unit * $each_list_length unquote("-") $column_gutter * $column_gutter_ratio unquote(")")  
+      
+
 //get position vaule in vals        
 @function get_position_value($position,$val...)
   $real_val: nth($val,1)
@@ -187,8 +233,9 @@ $lists_collection: unquote("")
       
 
 
-//1 paddind seting
-//2.RWD column order
+
+//RWD column order
+//try more flex layout 
 
 
 

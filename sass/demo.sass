@@ -8,7 +8,7 @@
 
 
 //turn on media query setting
-//de
+//default is false 
 $with_media_query: true
 
 // add new grid by ab_grid mixin
@@ -40,22 +40,33 @@ $with_media_query: true
 +ab_grid(a ,b b b)
 +ab_grid(a a,b b b)
 +ab_grid(a a a,b b)
-+ab_grid(a,b,c,d,e,f,g,h)
 
+//for some specific situation or just create for tuning
++ab_grid(a a a a a,b b b b)
 
-//for demo
-.grid_abcdefgh
-  .column
-    font-size: 13px
 
 
 //use different unit column gutter
 $column_gutter: 5rem
-+ab_grid(w,x,y,z)
++ab_grid(w,x,y,z) //just try different naming ,it's depend on you
+
+//add column padding
+$column_padding: 2em
+$column_gutter: 5% //if you want reset $column_gutter to default value or others,plz reset it before create new grid   ...very silly way.. i know
++ab_grid(x,y,z)
 
 
-.test
-  right: get_position_value( right , 10px 20px 30px 40px)
-  right: get_position_value( right , 10px 20px 30px)
-  right: get_position_value( right , 10px 20px)
-  right: get_position_value( right , 10px)
+
+
+
+
+/*only for demo*/
+body
+  margin: 0
+  padding: 0
+
+#main_container
+  width: 960px
+  margin: 0 auto
+  @media only screen and (max-width: $break-point)
+    width: 100%
