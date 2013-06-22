@@ -13,7 +13,7 @@ $with_media_query: true
 
 // add new grid by ab_grid mixin
 // example: +ab_grid(a a a,b b,c c c)
-//will make 3 column layout ,with ratio 3:2:3  under .columns_aaabbccc
+//will make 3 column layout ,with ratio 3:2:3  under .grid_aaabbccc
 
 
 //change container column name by change $child_name ,example:
@@ -57,9 +57,6 @@ $column_gutter: 5% //if you want reset $column_gutter to default value or others
 
 
 
-
-
-
 /*only for demo*/
 body
   margin: 0
@@ -68,5 +65,5 @@ body
 #main_container
   width: 960px
   margin: 0 auto
-  @media only screen and (max-width: $break-point)
+  @media only screen and (max-width: 767px)
     width: 100%
