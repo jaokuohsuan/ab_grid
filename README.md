@@ -3,7 +3,7 @@ ab grid
 =======
 
 
-ab grid 是一個依據特定邏輯去切分版面的 css 流動布局系統，  
+ab grid 是一個依據特定邏輯命名方式去切分版面的 css 流動布局系統，  
 雖然有 grid 在名字內，但是不含有固定隔線系統在內，僅依據內容切分比例  
 建議使用在簡單的排版，較不易顯雜亂
   
@@ -222,4 +222,4 @@ create structure as:
         $edge_gutter_media_query: 5% 
 
     (only the most basic media query setting)  
- ** use a lot of calc() and :nth-child() ，plz consider browser support by your project **
+ ** use a lot of calc() and :nth-child() ，plz consider browser support for your project **
